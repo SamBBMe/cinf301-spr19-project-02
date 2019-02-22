@@ -7,12 +7,12 @@ class Card {
     constructor(suit, num) {
         this.suit = suit;
         this.num = num;
+        this.img = 
         selected = false;
     }
 
     select() {
         if(selected) {
-            
             selected = !selected;
         } else {
             
