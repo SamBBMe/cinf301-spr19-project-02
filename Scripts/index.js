@@ -16,7 +16,7 @@ class Card {
         
     }
 
-    select() {
+    onclick = () => {
         if(selected) {
             img.border.style.border = 'none';
             selected = !selected;
