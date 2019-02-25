@@ -128,7 +128,10 @@ discard.onclick = () => {
     if(!discarded){
         winC++;
         if(winC === 2){
-            document.getElementById("title").innerHTML = "You Won!";
+            let winner = "";
+            checkWinner() ? winner = "Player 1" : winner = "Player 2"
+
+            document.getElementById("title").innerHTML = winner + " won!";
             document.getElementById("title").style.color = 'red';
 
             for(user of userHand){
@@ -142,4 +145,10 @@ discard.onclick = () => {
     } else {
         winC = 0;
     }
+}
+/*
+* Returns true if player 1 wins, false if player 2 wins
+*/
+function checkWinner () {
+    return true;
 }
