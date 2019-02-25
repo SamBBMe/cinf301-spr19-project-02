@@ -1,0 +1,10 @@
+.hand {
+    display: grid;
+    grid-template-columns: auto auto auto auto auto;
+    grid-template-rows: 400px;
+    grid-row-gap: 200px;
+}
+
+body{
+    background-color: #477148;
+}
