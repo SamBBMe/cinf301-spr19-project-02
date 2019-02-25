@@ -7,8 +7,8 @@ let turn = 0;
 let winC = 0;
 
 class Card {
-    constructor(element, suite, num) {
-        this.suite = suite;
+    constructor(element, suit, num) {
+        this.suit = suit;
         this.num = num;
         this.selected = false;
         this.img = element;
@@ -31,16 +31,16 @@ class Card {
 
         let rand = Math.floor((Math.random() * 4) + 1);
         if(rand === 1) {
-            suite = 'c';
+            suit = 'c';
         } else if (rand === 2) {
-            suite = 'd';
+            suit = 'd';
         } else if (rand === 3) {
-            suite = 's';
+            suit = 's';
         } else if (rand === 4) {
-            suite = 'h';
+            suit = 'h';
         }
 
-        if(discardPile.includes("" + num + suite)) {
+        if(discardPile.includes("" + num + suit)) {
             draw();
         } else {
             img.src = num + suit + '.png';
@@ -49,7 +49,7 @@ class Card {
 
     discard() {
         if(selected) {
-            discardPile.push("" + num + suite);
+            discardPile.push("" + num + suit);
             draw();
             return true;
         }
@@ -66,36 +66,36 @@ start.onclick = () => {
 
         for(let user of document.getElementById("user").children){
         
-            let suite = "";
+            let suit = "";
             let rand = Math.floor((Math.random() * 4) + 1);
             if(rand === 1) {
-                suite = 'c';
+                suit = 'c';
             } else if (rand === 2) {
-                suite = 'd';
+                suit = 'd';
             } else if (rand === 3) {
-                suite = 's';
+                suit = 's';
             } else if (rand === 4) {
-                suite = 'h';
+                suit = 'h';
             }
     
-            userHand.push(new Card(user, suite, Math.floor((Math.random() * 13) + 2)));
+            userHand.push(new Card(user, suit, Math.floor((Math.random() * 13) + 2)));
         }
     
         for(let ai of document.getElementById("ai").children){
             
-            let suite = "";
+            let suit = "";
             let rand = Math.floor((Math.random() * 4) + 1);
             if(rand === 1) {
-                suite = 'c';
+                suit = 'c';
             } else if (rand === 2) {
-                suite = 'd';
+                suit = 'd';
             } else if (rand === 3) {
-                suite = 's';
+                suit = 's';
             } else if (rand === 4) {
-                suite = 'h';
+                suit = 'h';
             }
     
-            aiHand.push(new Card(ai, suite, Math.floor((Math.random() * 13) + 2)));
+            aiHand.push(new Card(ai, suit, Math.floor((Math.random() * 13) + 2)));
         }
     }
 }
