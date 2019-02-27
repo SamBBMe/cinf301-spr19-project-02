@@ -89,20 +89,21 @@ start.onclick = () => {
     if(start.innerHTML === "restart") {
         window.location.reload();
     } else {
-        for(let user of document.getElementById("user").children){;
+        for(let user of document.getElementById("user").children){
             userHand.push(new Card(user, 0));
+            userHand.sort(function(a, b){return a.num - b.num});
         }
-    
+
+
         for(let opp of document.getElementById("opp").children){
             oppHand.push(new Card(opp, 1));
-        }
+            oppHand.sort(function(a, b){return a.num - b.num});
 
+        }
         start.innerHTML = "restart";
     }
+};
 
-    
-
-}
 
 /*
 * Adds click functionality to the discard button.
@@ -114,11 +115,13 @@ start.onclick = () => {
 discard.onclick = () => {
     let discarded = false;
     if(turn % 2 === 0) {
+        userHand.sort(function(a, b){return a.num - b.num});
         for(let card of userHand) {
             if (card.discard()) discarded = true;
         }
         turn++;
     } else {
+        oppHand.sort(function(a, b){return a.num - b.num});
         for(let card of oppHand) {
             if(card.discard()) discarded = true;
         }
@@ -145,10 +148,113 @@ discard.onclick = () => {
     } else {
         winC = 0;
     }
-}
+};
+
 /*
 * Returns true if player 1 wins, false if player 2 wins
 */
 function checkWinner () {
-    return true;
+    let userHandRank = 10;
+    let userStraightCount = 0;
+    let userFlushCount = 0;
+    let userMatchCount = 0;
+    let userPairCount = 0;
+    let userFlush = false;
+    let userStraight = false;
+    let userHighCard = 0;
+
+    let oppHandRank = 10;
+    let oppHighCard = 0;
+    let oppMatchCount = 0;
+    let oppStraightCount = 0;
+    let oppFlushCount = 0;
+    let oppStraight = false;
+    let oppFlush = false;
+    let oppPairCount = 0;
+
+    for(let i = 0; i < userHand.length - 1; i++) {
+        if (userHand[i].num === (userHand[i + 1].num - 1)) userStraightCount++;
+        if (userHand[i].suit === (userHand[i + 1].suit)) userFlushCount++;
+        if (userHand[i].num === (userHand[i+1].num)) userMatchCount++;
+        if (userMatchCount === 1 && (userHand[i].num !== userHand[i+1].num) || (i === 3 && userMatchCount === 1)) {
+            userPairCount++;
+            userMatchCount = 0;
+        }
+        if(userMatchCount === 2 && userPairCount === 1) userHandRank = 4;
+    }
+    if(userPairCount === 1) userHandRank = 9;
+    if(userPairCount === 2) userHandRank = 8;
+    if(userMatchCount === 2) userHandRank = 7;
+
+    if (userStraightCount >= 4){
+        userStraight = true;
+        userHandRank = 6;
+    }
+    if (userFlushCount >= 4){
+        userFlush = true;
+        userHandRank = 5;
+    }
+
+    if(userPairCount === 1 && userMatchCount === 2) userHandRank = 4;
+
+    if(userMatchCount === 3) userHandRank = 3;
+
+    if(userFlush === true && userStraight === true){
+        userHandRank = 2;
+        if(userHand[4].num === 14){
+            userHandRank = 1;
+        }
+    }
+
+    for(let i = 0; i < oppHand.length - 1; i++) {
+        if (oppHand[i].num === (oppHand[i + 1].num - 1)) oppStraightCount++;
+        if (oppHand[i].suit === (oppHand[i + 1].suit)) oppFlushCount++;
+        if (oppHand[i].num === (oppHand[i+1].num)) oppMatchCount++;
+        if (oppMatchCount === 1 && (oppHand[i].num !== oppHand[i+1].num) || (i === 3 && oppMatchCount === 1)) {
+            oppPairCount++;
+            oppMatchCount = 0;
+        }
+        if(oppMatchCount === 2 && oppPairCount === 1) oppHandRank = 4;
+    }
+    if(oppPairCount === 1) oppHandRank = 9;
+    if(oppPairCount === 2) oppHandRank = 8;
+    if(oppMatchCount === 2) oppHandRank = 7;
+
+    if (oppStraightCount >= 4){
+        oppStraight = true;
+        oppHandRank = 6;
+    }
+    if (oppFlushCount >= 4){
+        oppFlush = true;
+        oppHandRank = 5;
+    }
+
+    if(oppPairCount === 1 && oppMatchCount === 2) oppHandRank = 4;
+
+    if(oppMatchCount === 3) oppHandRank = 3;
+
+    if(oppFlush === true && oppStraight === true){
+        oppHandRank = 2;
+        if(oppHand[4].num === 14){
+            oppHandRank = 1;
+        }
+    }
+
+    if (userHandRank < oppHandRank) return true;
+    else if (userHandRank === oppHandRank) {
+        for (let card of userHand){
+            if(userHighCard < card.num) {
+                userHighCard = card.num;
+            }
+        }
+        for (let card of oppHand){
+            if(oppHighCard < card.num) {
+                oppHighCard = card.num;
+            }
+        }
+        if(userHighCard > oppHighCard) return true;
+        else return false;
+    }
+    else return false;
+
 }
