@@ -36,7 +36,7 @@ class Card {
             if(this.selected) {
                 this.img.style.border = 'none';
                 this.selected = !this.selected;
-            } else {
+            } else if(less3Selected()) {
                 this.img.style.border = '3px solid yellow';
                 this.selected = !this.selected;
             }
@@ -86,7 +86,7 @@ class Card {
 */
 
 start.onclick = () => {
-    if(start.innerHTML === "restart") {
+    if(start.innerHTML === "Restart") {
         window.location.reload(true);
     } else {
         document.getElementById("centerText").style.color = 'black';
@@ -115,48 +115,79 @@ start.onclick = () => {
 */
 
 discard.onclick = () => {
-    let discarded = false;
-    if(turn % 2 === 0) {
-        document.getElementById("centerText").innerHTML = "Player 2 choose cards to discard or hold";
-        userHand.sort(function(a, b){return a.num - b.num});
-        for(let card of userHand) {
-            if (card.discard()) discarded = true;
+    if(start.innerHTML==="Restart"){
+        let discarded = false;
+        if(turn % 2 === 0) {
+            document.getElementById("centerText").innerHTML = "Player 2 choose cards to discard or hold";
+            userHand.sort(function(a, b){return a.num - b.num});
+            for(let card of userHand) {
+                if (card.discard()) discarded = true;
+            }
+            turn++;
+        } else {
+            document.getElementById("centerText").innerHTML = "Player 1 choose cards to discard or hold";
+            oppHand.sort(function(a, b){return a.num - b.num});
+            for(let card of oppHand) {
+                if(card.discard()) discarded = true;
+            }
+            turn++;
         }
-        turn++;
-    } else {
-        document.getElementById("centerText").innerHTML = "Player 1 choose cards to discard or hold";
-        oppHand.sort(function(a, b){return a.num - b.num});
-        for(let card of oppHand) {
-            if(card.discard()) discarded = true;
+
+        if(!discarded){
+            winC++;
+            if(winC % 2 === 0 || drawnPile.length === 53){
+                let winner = "";
+                checkWinner() ? winner = "Player 1" : winner = "Player 2"
+                if(winner === "Player 1") {
+                    document.getElementById("centerText").innerHTML = winner + " won with " + userHand.rank;
+                }
+                if(winner === "Player 2") {
+                    document.getElementById("centerText").innerHTML = winner + " won with " + oppHand.rank;
+                }
+                document.getElementById("centerText").style.color = 'red';
+
+                for(user of userHand){
+                    user.img.onclick = () => {};
+                }
+
+                for(opp of oppHand){
+                    opp.img.onclick = () => {};
+                }
+
+                discard.remove();
+            }
+        } else {
+            winC = 0;
         }
-        turn++;
-    }
-
-    if(!discarded){
-        winC++;
-        if(winC % 2 === 0){
-            let winner = "";
-            checkWinner() ? winner = "Player 1" : winner = "Player 2"
-            if(winner === "Player 1") {
-                document.getElementById("centerText").innerHTML = winner + " won with " + userHand.rank;
-            }
-            if(winner === "Player 2") {
-                document.getElementById("centerText").innerHTML = winner + " won with " + oppHand.rank;
-            }
-            document.getElementById("centerText").style.color = 'red';
-
-            for(user of userHand){
-                user.img.onclick = () => {};
-            }
-
-            for(opp of oppHand){
-                opp.img.onclick = () => {};
-            }
-        }
-    } else {
-        winC = 0;
-    }
+    }  
 };
+
+function less3Selected() {
+    let numClicked = 0;
+    if(turn % 2 === 0){
+        for(card of userHand){
+            if(card.selected){
+                numClicked++
+            }
+        }
+        if(numClicked < 3) {
+            return true;
+        } else {
+            return false;
+        }
+    } else if (turn % 2 === 1) {
+        for(card of oppHand){
+            if(card.selected){
+                numClicked++
+            }
+        }
+        if(numClicked < 3) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+}
 
 /*
 * Determines rank for each player when called
