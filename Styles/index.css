@@ -1,10 +1,41 @@
 .hand {
     display: grid;
-    grid-template-columns: auto auto auto auto auto;
-    grid-template-rows: 400px;
+    grid-template-columns:auto auto auto auto auto;
+    grid-template-rows: 200px;
     grid-row-gap: 200px;
+    grid-gap: 10%;
+    justify-content: center;
+}
+
+.center {
+    display: grid;
+    grid-template-columns: auto;
+    grid-template-rows: 100px;
+    grid-row-gap: 200px;
+    justify-content: center;
+}
+
+.centerText {
+    text-align: center;
+    color: black;
+}
+
+button {
+    background-color: #555555; /* black */
+    border: none;
+    color: white;
+    padding: 15px 32px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    font-size: 16px;
 }
 
 body{
     background-color: #477148;
+}
+
+h2{
+    height: 100px;
+    vertical-align: middle;
 }

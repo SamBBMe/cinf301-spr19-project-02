@@ -87,8 +87,10 @@ class Card {
 
 start.onclick = () => {
     if(start.innerHTML === "restart") {
-        window.location.reload();
+        window.location.reload(true);
     } else {
+        document.getElementById("centerText").style.color = 'black';
+        document.getElementById("centerText").innerHTML = "Player 1 choose cards to discard or hold";
         for(let user of document.getElementById("user").children){
             userHand.push(new Card(user, 0));
             userHand.sort(function(a, b){return a.num - b.num});
@@ -100,7 +102,7 @@ start.onclick = () => {
             oppHand.sort(function(a, b){return a.num - b.num});
 
         }
-        start.innerHTML = "restart";
+        start.innerHTML = "Restart";
     }
 };
 
@@ -115,12 +117,14 @@ start.onclick = () => {
 discard.onclick = () => {
     let discarded = false;
     if(turn % 2 === 0) {
+        document.getElementById("centerText").innerHTML = "Player 2 choose cards to discard or hold";
         userHand.sort(function(a, b){return a.num - b.num});
         for(let card of userHand) {
             if (card.discard()) discarded = true;
         }
         turn++;
     } else {
+        document.getElementById("centerText").innerHTML = "Player 1 choose cards to discard or hold";
         oppHand.sort(function(a, b){return a.num - b.num});
         for(let card of oppHand) {
             if(card.discard()) discarded = true;
@@ -130,12 +134,16 @@ discard.onclick = () => {
 
     if(!discarded){
         winC++;
-        if(winC === 2){
+        if(winC % 2 === 0){
             let winner = "";
             checkWinner() ? winner = "Player 1" : winner = "Player 2"
-
-            document.getElementById("title").innerHTML = winner + " won!";
-            document.getElementById("title").style.color = 'red';
+            if(winner === "Player 1") {
+                document.getElementById("centerText").innerHTML = winner + " won with " + userHand.rank;
+            }
+            if(winner === "Player 2") {
+                document.getElementById("centerText").innerHTML = winner + " won with " + oppHand.rank;
+            }
+            document.getElementById("centerText").style.color = 'red';
 
             for(user of userHand){
                 user.img.onclick = () => {};
@@ -151,6 +159,7 @@ discard.onclick = () => {
 };
 
 /*
+* Determines rank for each player when called
 * Returns true if player 1 wins, false if player 2 wins
 */
 function checkWinner () {
@@ -162,6 +171,7 @@ function checkWinner () {
     let userFlush = false;
     let userStraight = false;
     let userHighCard = 0;
+    userHand.rank = "the highest card";
 
     let oppHandRank = 10;
     let oppHighCard = 0;
@@ -171,38 +181,58 @@ function checkWinner () {
     let oppStraight = false;
     let oppFlush = false;
     let oppPairCount = 0;
+    oppHand.rank = "the highest card";
 
     for(let i = 0; i < userHand.length - 1; i++) {
         if (userHand[i].num === (userHand[i + 1].num - 1)) userStraightCount++;
         if (userHand[i].suit === (userHand[i + 1].suit)) userFlushCount++;
         if (userHand[i].num === (userHand[i+1].num)) userMatchCount++;
-        if (userMatchCount === 1 && (userHand[i].num !== userHand[i+1].num) || (i === 3 && userMatchCount === 1)) {
+        if (userMatchCount === 1 && ((userHand[i].num !== userHand[i+1].num) || (i === 3 && userMatchCount === 1))) {
             userPairCount++;
             userMatchCount = 0;
         }
         if(userMatchCount === 2 && userPairCount === 1) userHandRank = 4;
     }
-    if(userPairCount === 1) userHandRank = 9;
-    if(userPairCount === 2) userHandRank = 8;
-    if(userMatchCount === 2) userHandRank = 7;
+    if(userPairCount === 1) {
+        userHand.rank = "one pair";
+        userHandRank = 9;
+    }
+    if(userPairCount === 2) {
+        userHand.rank = "two pairs";
+        userHandRank = 8;
+    }
+    if(userMatchCount === 2) {
+        userHand.rank = "three of a kind";
+        userHandRank = 7;
+    }
 
     if (userStraightCount >= 4){
         userStraight = true;
         userHandRank = 6;
+        userHand.rank = "a straight";
     }
     if (userFlushCount >= 4){
         userFlush = true;
         userHandRank = 5;
+        userHand.rank = "a flush";
     }
 
-    if(userPairCount === 1 && userMatchCount === 2) userHandRank = 4;
+    if(userPairCount === 1 && userMatchCount === 2) {
+        userHandRank = 4;
+        userHand.rank = "a full house";
+    }
 
-    if(userMatchCount === 3) userHandRank = 3;
+    if(userMatchCount === 3) {
+        userHandRank = 3;
+        userHand.rank = "four of a kind";
+    }
 
     if(userFlush === true && userStraight === true){
         userHandRank = 2;
+        userHand.rank = "a straight flush";
         if(userHand[4].num === 14){
             userHandRank = 1;
+            userHand.rank = "a royal flush";
         }
     }
 
@@ -216,40 +246,73 @@ function checkWinner () {
         }
         if(oppMatchCount === 2 && oppPairCount === 1) oppHandRank = 4;
     }
-    if(oppPairCount === 1) oppHandRank = 9;
-    if(oppPairCount === 2) oppHandRank = 8;
-    if(oppMatchCount === 2) oppHandRank = 7;
+    if(oppPairCount === 1){
+        oppHandRank = 9;
+        oppHand.rank = "one pair";
+    }
+    if(oppPairCount === 2) {
+        oppHandRank = 8;
+        oppHand.rank = "two pairs";
+    }
+    if(oppMatchCount === 2) {
+        oppHandRank = 7;
+        oppHand.rank = "three of a kind";
+    }
 
     if (oppStraightCount >= 4){
         oppStraight = true;
         oppHandRank = 6;
+        oppHand.rank = "a straight";
     }
     if (oppFlushCount >= 4){
         oppFlush = true;
         oppHandRank = 5;
+        oppHand.Rank = "a flush";
     }
 
-    if(oppPairCount === 1 && oppMatchCount === 2) oppHandRank = 4;
+    if(oppPairCount === 1 && oppMatchCount === 2) {
+        oppHandRank = 4;
+        oppHand.rank = "a full house"
+    }
 
-    if(oppMatchCount === 3) oppHandRank = 3;
+    if(oppMatchCount === 3) {
+        oppHandRank = 3;
+        oppHand.rank = "four of a kind";
+    }
 
     if(oppFlush === true && oppStraight === true){
         oppHandRank = 2;
+        oppHand.rank = "a straight flush"
         if(oppHand[4].num === 14){
             oppHandRank = 1;
+            oppHand.rank = "a royal flush"
         }
     }
 
     if (userHandRank < oppHandRank) return true;
     else if (userHandRank === oppHandRank) {
-        for (let card of userHand){
-            if(userHighCard < card.num) {
-                userHighCard = card.num;
+        if (userHandRank === 10 && oppHandRank === 10) {
+            for (let card of userHand) {
+                if (userHighCard < card.num) {
+                    userHighCard = card.num;
+                }
+            }
+            for (let card of oppHand) {
+                if (oppHighCard < card.num) {
+                    oppHighCard = card.num;
+                }
             }
         }
-        for (let card of oppHand){
-            if(oppHighCard < card.num) {
-                oppHighCard = card.num;
+        else if (userHandRank <= 9) {
+            for(let i = 0; i < userHand.length - 1; i++) {
+                if (userHand[i].num === userHand[i+1].num) {
+                    userHighCard = userHand[i].num;
+                }
+            }
+            for(let i = 0; i < oppHand.length - 1; i++) {
+                if (oppHand[i].num === oppHand[i+1].num) {
+                    oppHighCard = oppHand[i].num;
+                }
             }
         }
         if(userHighCard > oppHighCard) return true;
