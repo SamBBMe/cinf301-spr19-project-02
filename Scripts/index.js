@@ -162,6 +162,9 @@ discard.onclick = () => {
     }  
 };
 
+/*
+ * small function to make it so that only three cards can be selected
+ */
 function less3Selected() {
     let numClicked = 0;
     if(turn % 2 === 0){
@@ -190,7 +193,7 @@ function less3Selected() {
 }
 
 /*
-* Determines rank for each player when called
+* Determines rank for each player and compares both hands' rank
 * Returns true if player 1 wins, false if player 2 wins
 */
 function checkWinner () {
